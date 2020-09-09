@@ -72,7 +72,8 @@ def lollipop(x, y, color=None, lw=2, ybot=0):
              'supported. Setting ybot to 0.')
     markerline, stemlines, baseline = plt.stem(x, y, '-')
     if not color or color == 'None':
-        color = stemlines[0].get_color()
+        #color = stemlines[0].get_color()
+        color = stemlines[0, 0].get_color()
     lolli_fmt = {'linewidth': lw, 'color': color}
     pop_fmt = {'mec': color, 'markerfacecolor':'None',  \
                'markersize':10, 'markeredgewidth': lw*1.1}

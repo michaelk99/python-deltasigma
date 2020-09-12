@@ -86,10 +86,12 @@ def plotPZ(H, color='b', markersize=5, showlist=False):
     plt.grid(True)
 
     # Plot x and o for poles and zeros, respectively
-    plt.plot(p.real, p.imag, linestyle='None', **pole_fmt)
-    #plt.hold(True)
+    #plt.plot(p.real, p.imag, linestyle='None', **pole_fmt)
+    plt.plot(p.real, p.imag, linestyle='None', marker='x', markersize=markersize, mew=markersize)
+    
     if len(z) > 0:
-        plt.plot(z.real, z.imag, linestyle='None', **zero_fmt)
+        #plt.plot(z.real, z.imag, linestyle='None', **zero_fmt)
+        plt.plot(z.real, z.imag, linestyle='None', marker='o', markersize=markersize, mew=markersize)
 
     # Draw unit circle, real axis and imag axis
     circle = np.exp(2j*np.pi*np.linspace(0, 1, 100))
@@ -105,6 +107,7 @@ def plotPZ(H, color='b', markersize=5, showlist=False):
         markers = [] 
         descr = []
         ps = p[p.imag >= 0]
+        
         for pi in ps:
             markers += [plt.Line2D((), (), linestyle='None', **pole_fmt)]
             if np.allclose(pi.imag, 0, atol=1e-5):

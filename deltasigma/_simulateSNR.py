@@ -32,7 +32,7 @@ from ._utils import _get_zpk
 
 
 def simulateSNR(arg1, osr, amp=None, f0=0, nlev=2, f=None, k=13,
-                quadrature=False):
+                quadrature=False, dc=0):
     """Determine the SNR for a delta-sigma modulator by using simulations.
 
     Simulate a delta-sigma modulator with sine wave inputs of various
@@ -113,6 +113,10 @@ def simulateSNR(arg1, osr, amp=None, f0=0, nlev=2, f=None, k=13,
         Whether the delta-sigma modulator is a quadrature modulator or not.
         Defaults to ``False``.
 
+    dc : float, optional
+        Add a dc offset to the input signal
+        Defaults to 0
+
     **Returns:**
 
     snr : ndarray
@@ -120,6 +124,10 @@ def simulateSNR(arg1, osr, amp=None, f0=0, nlev=2, f=None, k=13,
 
     amp : ndarray
         The amplitudes corresponding to the SNR values.
+
+    uVec : list of input signals
+
+    vVec : list of output signals
 
     .. seealso:: :func:`predictSNR`.
 
@@ -247,14 +255,18 @@ def simulateSNR(arg1, osr, amp=None, f0=0, nlev=2, f=None, k=13,
                                      dtype=np.int32)
         F = F - f1 + 1
     snr = np.zeros(amp.shape)
+    uVec = []
+    vVec = []
     for i, A in enumerate(np.power(10.0, amp/20)):
         if quadrature_ntf:
             v, _, _, _ = simulateQDSM(A*tone, arg1, nlev)
         else:
-            v, _, _, _ = simulateDSM(A*tone, arg1, nlev)
+            v, _, _, _ = simulateDSM(A*tone+dc, arg1, nlev)
             if quadrature:
                 v = v[0, :] + 1j*v[1, :]
         hwfft = fftshift(fft(window*v[Ntransient:N + Ntransient]))
         snr[i] = calculateSNR(hwfft[inBandBins - 1], F)
-    return snr, amp
+        uVec.append(A*tone+dc)
+        vVec.append(v)
+    return snr, amp, uVec, vVec 
 
